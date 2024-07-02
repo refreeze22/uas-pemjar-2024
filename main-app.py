@@ -40,8 +40,8 @@ def ftp_server():
     authorizer.add_user("user", "12345", ".", perm="elradfmw")
     handler = FTPHandler
     handler.authorizer = authorizer
-    server = FTPServer(("0.0.0.0", 2121), handler)
-    print("Server FTP berjalan pada port 2121")
+    server = FTPServer(("0.0.0.0", 21), handler)
+    print("Server FTP berjalan pada port 21")
     server.serve_forever()
 
 def ftp_client():
@@ -51,8 +51,13 @@ def ftp_client():
 
     with ftplib.FTP(host) as ftp:
         ftp.login(user=username, passwd=password)
+
+        filename = "sample.txt"
+        with open(filename, "rb") as file:
+            ftp.storbinary(f"STOR {filename}", file)
+
         ftp.retrlines('LIST')
-        print("Koneksi FTP berhasil")
+        print("Koneksi FTP berhasil & file sample.txt terupload.")
 
 def ftp_server_client():
     choice = input("Pilih: 1 untuk FTP Server, 2 untuk FTP Client: ")
@@ -67,10 +72,12 @@ def ssh_client():
     host = input("Masukkan alamat host SSH: ")
     username = input("Masukkan username: ")
     password = input("Masukkan password: ")
+    # key_filename = input("Masukkan path ke kunci privat SSH: ")
 
     client = SSHClient()
     client.set_missing_host_key_policy(AutoAddPolicy())
     client.connect(hostname=host, username=username, password=password)
+    # client.connect(hostname=host, username=username, key_filename=key_filename)
 
     stdin, stdout, stderr = client.exec_command('ls')
     print(stdout.read().decode())
