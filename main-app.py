@@ -35,13 +35,16 @@ def socket_access():
         except Exception as e:
             print(f"Gagal terhubung ke {host} pada port {port}: {e}")
 
-def ftp_server():
+def ftp_server(passive_ports=None):
     authorizer = DummyAuthorizer()
-    authorizer.add_user("user", "12345", ".", perm="elradfmw")
+    authorizer.add_user("frizkarizkiani", "12345", ".", perm="elradfmw")
     handler = FTPHandler
     handler.authorizer = authorizer
-    server = FTPServer(("0.0.0.0", 21), handler)
-    print("Server FTP berjalan pada port 21")
+
+    if passive_ports:
+        handler.passive_ports = passive_ports
+
+    server = FTPServer(("127.0.0.1", 21), handler)
     server.serve_forever()
 
 def ftp_client():
